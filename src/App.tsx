@@ -556,7 +556,7 @@ const CTA = () => {
           />
         </a>
 
-        <h2 className="text-4xl font-display font-bold tracking-modern text-charcoal sm:text-5xl">Ready to scale with Capy's AI army? and Yabsss</h2>
+        <h2 className="text-4xl font-display font-bold tracking-modern text-charcoal sm:text-5xl">Ready to scale with Capy's AI army?</h2>
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium text-charcoal/90">Have a question or just want to see what's possible? Drop your inquiry below. Whether it's a quick question or a complex project, we're here to help.</p>
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <a 
@@ -581,7 +581,7 @@ const CTA = () => {
   );
 };
 
-const Footer = () => {
+const Footer = ({ onOpenPrivacy, onOpenTerms }: { onOpenPrivacy: () => void, onOpenTerms: () => void }) => {
   return (
     <footer className="border-t border-white/10 bg-orange-700/20 px-6 py-12 lg:px-20 backdrop-blur-md">
       <div className="mx-auto max-w-7xl flex flex-col md:flex-row justify-between items-center gap-8">
@@ -589,17 +589,72 @@ const Footer = () => {
           <span className="text-xl font-bold text-charcoal">Yabsss<span className="text-accent">AI</span> Solutions</span>
         </div>
         <div className="flex items-center gap-8 text-sm font-bold text-charcoal/80">
-          <a className="hover:text-charcoal transition-colors" href="#">Privacy Policy</a>
-          <a className="hover:text-charcoal transition-colors" href="#">Terms of Service</a>
+          <button onClick={onOpenPrivacy} className="hover:text-charcoal transition-colors">Privacy Policy</button>
+          <button onClick={onOpenTerms} className="hover:text-charcoal transition-colors">Terms of Service</button>
           <a className="hover:text-charcoal transition-colors" href="https://docs.google.com/forms/d/e/1FAIpQLSfGvMTloy55c5QogEJxn64p-jZG2jwCpqxoIeAZxz2iQlGeyw/viewform?usp=sharing&ouid=114839842637166485955" target="_blank" rel="noopener noreferrer">Contact</a>
         </div>
-        <p className="text-sm text-charcoal/40">© 2024 YabsssAI Solutions. Build with chill.</p>
+        <p className="text-sm font-medium text-charcoal/40">© 2026 YabsssAI Solutions. Build with chill.</p>
       </div>
     </footer>
   );
 };
 
+const LegalModal = ({ isOpen, onClose, title, content }: { isOpen: boolean, onClose: () => void, title: string, content: React.ReactNode }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="relative w-full max-w-2xl max-h-[80vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+      >
+        <div className="p-6 border-b border-charcoal/10 bg-orange-50 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-charcoal">{title}</h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-charcoal/5 rounded-full transition-colors"
+          >
+            <X className="w-6 h-6 text-charcoal" />
+          </button>
+        </div>
+        <div className="p-8 overflow-y-auto text-charcoal/80 leading-relaxed font-medium">
+          {content}
+        </div>
+        <div className="p-6 border-t border-charcoal/10 bg-white/50 flex justify-end">
+          <button 
+            onClick={onClose}
+            className="px-6 py-2 bg-charcoal text-white font-bold rounded-full hover:bg-charcoal/90 transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 export default function App() {
+  const [activeLegal, setActiveLegal] = useState<'privacy' | 'terms' | null>(null);
+
+  const legalContent = {
+    privacy: (
+      <div className="space-y-4">
+        <p>YabsssAI Solutions takes your privacy seriously. We collect only the information necessary to provide our services, including contact details you voluntarily submit via our forms.</p>
+        <p>We do not sell your data to third parties. We may use aggregated, anonymized data to improve our services. Any personal information you provide is stored securely and used only to communicate with you about your inquiry.</p>
+        <p>By using this site, you agree to our use of cookies for analytics and functionality. You can opt out at any time by adjusting your browser settings.</p>
+      </div>
+    ),
+    terms: (
+      <div className="space-y-4">
+        <p>By accessing this website, you agree to use it only for lawful purposes and in a way that does not infringe on the rights of others. YabsssAI Solutions reserves the right to update or modify services without prior notice.</p>
+        <p>All content on this site is the intellectual property of YabsssAI Solutions unless stated otherwise. Unauthorized reproduction or use is prohibited.</p>
+        <p>We are not liable for any direct or indirect damages resulting from the use of our website or automated systems.</p>
+        <p>These terms are subject to change as our technology and services evolve.</p>
+      </div>
+    )
+  };
+
   return (
     <div className="relative flex min-h-screen w-full flex-col overflow-x-hidden bg-background-sunset selection:bg-white/30">
       <NatureBackground />
@@ -612,8 +667,21 @@ export default function App() {
         <AboutUs />
         <CTA />
       </main>
-      <Footer />
+      <Footer onOpenPrivacy={() => setActiveLegal('privacy')} onOpenTerms={() => setActiveLegal('terms')} />
       <ChatBot />
+
+      <LegalModal 
+        isOpen={activeLegal === 'privacy'} 
+        onClose={() => setActiveLegal(null)} 
+        title="Privacy Policy" 
+        content={legalContent.privacy}
+      />
+      <LegalModal 
+        isOpen={activeLegal === 'terms'} 
+        onClose={() => setActiveLegal(null)} 
+        title="Terms of Service" 
+        content={legalContent.terms}
+      />
     </div>
   );
 }
