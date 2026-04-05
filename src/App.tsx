@@ -973,5 +973,3 @@ export default function App() {
     </div>
   );
 }
-// test4
-const w = 4;
